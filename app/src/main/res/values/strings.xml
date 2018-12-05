@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">BallToy</string>
+    <string name="balldesc">steel ball</string>
 </resources>

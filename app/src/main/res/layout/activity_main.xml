@@ -9,7 +9,18 @@
         tools:context=".MainActivity" android:id="@+id/container">
 
     <ImageView
+            android:id="@+id/ball0"
+            android:contentDescription="@string/balldesc"
+            android:layout_width="12dp"
+            android:layout_height="12dp"
+            app:srcCompat="@drawable/ball"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"/>
+    <ImageView
             android:id="@+id/ball1"
+            android:contentDescription="@string/balldesc"
             android:layout_width="12dp"
             android:layout_height="12dp"
             app:srcCompat="@drawable/ball"
@@ -19,6 +30,7 @@
             app:layout_constraintBottom_toBottomOf="parent"/>
     <ImageView
             android:id="@+id/ball2"
+            android:contentDescription="@string/balldesc"
             android:layout_width="12dp"
             android:layout_height="12dp"
             app:srcCompat="@drawable/ball"
@@ -28,6 +40,87 @@
             app:layout_constraintBottom_toBottomOf="parent"/>
     <ImageView
             android:id="@+id/ball3"
+            android:contentDescription="@string/balldesc"
+            android:layout_width="12dp"
+            android:layout_height="12dp"
+            app:srcCompat="@drawable/ball"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"/>
+    <ImageView
+            android:id="@+id/ball4"
+            android:contentDescription="@string/balldesc"
+            android:layout_width="12dp"
+            android:layout_height="12dp"
+            app:srcCompat="@drawable/ball"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"/>
+    <ImageView
+            android:id="@+id/ball5"
+            android:contentDescription="@string/balldesc"
+            android:layout_width="12dp"
+            android:layout_height="12dp"
+            app:srcCompat="@drawable/ball"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"/>
+    <ImageView
+            android:id="@+id/ball6"
+            android:contentDescription="@string/balldesc"
+            android:layout_width="12dp"
+            android:layout_height="12dp"
+            app:srcCompat="@drawable/ball"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"/>
+    <ImageView
+            android:id="@+id/ball7"
+            android:contentDescription="@string/balldesc"
+            android:layout_width="12dp"
+            android:layout_height="12dp"
+            app:srcCompat="@drawable/ball"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"/>
+    <ImageView
+            android:id="@+id/ball8"
+            android:contentDescription="@string/balldesc"
+            android:layout_width="12dp"
+            android:layout_height="12dp"
+            app:srcCompat="@drawable/ball"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"/>
+    <ImageView
+            android:id="@+id/ball9"
+            android:contentDescription="@string/balldesc"
+            android:layout_width="12dp"
+            android:layout_height="12dp"
+            app:srcCompat="@drawable/ball"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"/>
+    <ImageView
+            android:id="@+id/ball10"
+            android:contentDescription="@string/balldesc"
+            android:layout_width="12dp"
+            android:layout_height="12dp"
+            app:srcCompat="@drawable/ball"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"/>
+    <ImageView
+            android:id="@+id/ball11"
+            android:contentDescription="@string/balldesc"
             android:layout_width="12dp"
             android:layout_height="12dp"
             app:srcCompat="@drawable/ball"

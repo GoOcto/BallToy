@@ -47,14 +47,27 @@ class MainActivity : AppCompatActivity(), SensorEventListener {
 
         view = findViewById(R.id.container) as View
         balls = listOf(
+            Ball(findViewById(R.id.ball0), view),
             Ball(findViewById(R.id.ball1), view),
             Ball(findViewById(R.id.ball2), view),
-            Ball(findViewById(R.id.ball3), view)
+            Ball(findViewById(R.id.ball3), view),
+            Ball(findViewById(R.id.ball4), view),
+            Ball(findViewById(R.id.ball5), view),
+            Ball(findViewById(R.id.ball6), view),
+            Ball(findViewById(R.id.ball7), view),
+            Ball(findViewById(R.id.ball8), view),
+            Ball(findViewById(R.id.ball9), view),
+            Ball(findViewById(R.id.ball10), view),
+            Ball(findViewById(R.id.ball11), view)
         )
 
-        balls[0].offset(-120f,-60f)
-        balls[1].offset( -10f, 40f)
-        balls[2].offset(  80f,-10f)
+        // start all balls in a circle around the center of the screen
+        for ( i in balls.indices ) {
+            val angle = (2f * Math.PI) * i / balls.size
+            val xpos = (  Math.cos(angle) * 120.0 ).toFloat()
+            val ypos = ( -Math.sin(angle) * 120.0 ).toFloat()
+            balls[i].offset(xpos,ypos)
+        }
 
         window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT)
@@ -111,7 +124,7 @@ class MainActivity : AppCompatActivity(), SensorEventListener {
 
             Sensor.TYPE_ACCELEROMETER -> {
 
-                // invert the x-axis
+                // invert the x-axis to match screen coordinates
                 ax = -event.values[0]
                 ay =  event.values[1]
                 az =  event.values[2]
@@ -161,9 +174,13 @@ class MainActivity : AppCompatActivity(), SensorEventListener {
             for ( ball in balls ) ball.update(accel_x.toFloat(),accel_y.toFloat())
 
             // each ball must interact with each other ball exactly once
-            balls[0].collide(balls[1])
-            balls[0].collide(balls[2])
-            balls[1].collide(balls[2])
+            for ( i in 1..(balls.size-1) ) {   // all but the first
+                for ( j in 0..(i-1) ) {        // from first up to but not including i'th
+                    balls[i].collide(balls[j])
+                }
+            }
+
+
         }
 
         prevT = t
