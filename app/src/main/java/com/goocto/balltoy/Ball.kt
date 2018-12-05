@@ -4,7 +4,6 @@ import android.view.View
 import android.widget.ImageView
 import java.util.*
 
-//import com.goocto.balltoy.R.drawable.ball
 
 class Ball(private val ball: ImageView, private val area: View) {
 
