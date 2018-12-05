@@ -17,14 +17,14 @@ class Ball(private val ball: ImageView, private val area: View) {
         ball.translationY = y
     }
 
-    fun collide( that:Ball ) {
+    fun collide( that:Ball ):Boolean {
 
         // use of `this` is redundant here, but it makes the code look more consistent
         // with regards to this <-> that
 
         // calculate the vector between the two balls
         val vect = this.p - that.p
-        val elas = 0.8f // elasticity of ball-ball interactions
+        val elas = .8f  // actual coefficient of restitution of stainless steel can range 0.63-0.93
 
         if ( vect.length()<ball.width ) {
             // a collision has occurred
@@ -42,14 +42,20 @@ class Ball(private val ball: ImageView, private val area: View) {
             val perpThat = para * para.dot(that.v)
 
             // transfer momentum by adjusting velocities
-            this.v = paraThis + perpThis*(1f-elas) + perpThat*elas
-            that.v = paraThat + perpThat*(1f-elas) + perpThis*elas
+            this.v = paraThis + perpThat*elas + perpThis*(1-elas)
+            that.v = paraThat + perpThis*elas + perpThat*(1-elas)
 
             // move each ball apart so they barely kiss
             val d = .5f*Math.abs((vect.length()-ball.width).toDouble() ).toFloat()
-            this.p += para*d*1.001f
-            that.p -= para*d*1.001f
+
+            // add a very small amount to account for rounding errors
+            this.p += para*d*1.00001f
+            that.p -= para*d*1.00001f
+
+            return true
         }
+
+        return false // no collision
     }
 
     fun update( axi:Float, ayi:Float ):Float {
@@ -95,7 +101,7 @@ class Ball(private val ball: ImageView, private val area: View) {
         ball.translationX = p.x
         ball.translationY = p.y
 
-        return bump;
+        return bump
     }
 
 
