@@ -17,45 +17,47 @@ class Ball(private val ball: ImageView, private val area: View) {
         ball.translationY = y
     }
 
-    fun collide( other:Ball ) {
+    fun collide( that:Ball ) {
+
+        // use of `this` is redundant here, but it makes the code look more consistent
+        // with regards to this <-> that
 
         // calculate the vector between the two balls
-        val n = p - other.p
-        val elast = 0.8f
+        val vect = this.p - that.p
+        val elas = 0.8f // elasticity of ball-ball interactions
 
-        if ( n.length()<ball.width ) {
+        if ( vect.length()<ball.width ) {
             // a collision has occurred
 
             // component unit vectors, perpendicular to and parallel to collision direction
-            val norm = n.normalized()
-            val perp = norm.orthogonal()
+            val para = vect.normalized()
+            val perp = para.orthogonal()
 
             // my vector in terms of components parallel and perpendicular to the collision direction
-            val parl_v = perp * perp.dot(v)
-            val perp_v = norm * norm.dot(v)
+            val paraThis = perp * perp.dot(this.v)
+            val perpThis = para * para.dot(this.v)
 
-            // the other vector in terms of components parallel and perpendicular to the collision vector
-            val parl_o = perp * perp.dot(other.v)
-            val perp_o = norm * norm.dot(other.v)
+            // the that vector in terms of components parallel and perpendicular to the collision vector
+            val paraThat = perp * perp.dot(that.v)
+            val perpThat = para * para.dot(that.v)
 
             // transfer momentum by adjusting velocities
-            v       = parl_v + perp_v*(1f-elast) + perp_o*elast
-            other.v = parl_o + perp_o*(1f-elast) + perp_v*elast
+            this.v = paraThis + perpThis*(1f-elas) + perpThat*elas
+            that.v = paraThat + perpThat*(1f-elas) + perpThis*elas
 
             // move each ball apart so they barely kiss
-            val d = .5f*Math.abs((n.length()-ball.width).toDouble() ).toFloat()
-            p       =       p + norm*d*1.001f
-            other.p = other.p - norm*d*1.001f
-
+            val d = .5f*Math.abs((vect.length()-ball.width).toDouble() ).toFloat()
+            this.p += para*d*1.001f
+            that.p -= para*d*1.001f
         }
     }
 
-    fun update( axi:Float, ayi:Float ){
+    fun update( axi:Float, ayi:Float ):Float {
 
-        val wid = 0.5f * ((area.width).toFloat()  - ball.width)
-        val hgt = 0.5f * ((area.height).toFloat() - ball.height)
+        val wid = 0.5f * (area.width  - ball.width ).toFloat()
+        val hgt = 0.5f * (area.height - ball.height).toFloat()
 
-        if ( wid==0f || hgt==0f ) return
+        if ( wid==0f || hgt==0f ) return 0f
 
         // apply a tiny bit of variation to incoming accelerations
         val r = Random()
@@ -65,13 +67,35 @@ class Ball(private val ball: ImageView, private val area: View) {
         v = Vec2(ax,ay)*.05f + v
         p = p + v
 
-        if (p.x<-wid) { p.x = -wid; v.x = -0.2f*v.x }
-        if (p.x> wid) { p.x =  wid; v.x = -0.2f*v.x }
-        if (p.y<-hgt) { p.y = -hgt; v.y = -0.8f*v.y } // much bouncier at the top edge
-        if (p.y> hgt) { p.y =  hgt; v.y = -0.2f*v.y }
+        // accumulate each bump to provide tactile feedback
+        var bump = 0f
+
+        // balls bounce of edges with an amount of elasticity of ball-wall interactions
+        if (p.x<-wid) {
+            p.x = -wid
+            v.x = -0.2f*v.x
+            bump += v.x
+        }
+        if (p.x> wid) {
+            p.x =  wid
+            v.x = -0.2f*v.x
+            bump -= v.x  // we need to change the sign, to make it positive
+        }
+        if (p.y<-hgt) {
+            p.y = -hgt
+            v.y = -0.8f*v.y // much bouncier at the top edge
+            bump += v.y
+        }
+        if (p.y> hgt) {
+            p.y =  hgt
+            v.y = -0.2f*v.y
+            bump -= v.y  // we need to change the sign, to make it positive
+        }
 
         ball.translationX = p.x
         ball.translationY = p.y
+
+        return bump;
     }
 
 

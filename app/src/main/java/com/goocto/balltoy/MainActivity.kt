@@ -8,6 +8,7 @@ import android.hardware.SensorEvent
 import android.hardware.SensorEventListener
 import android.hardware.SensorManager
 import android.os.Bundle
+import android.os.VibrationEffect
 import android.os.Vibrator
 import android.support.v7.app.AppCompatActivity
 import android.view.View
@@ -16,27 +17,22 @@ import android.view.WindowManager
 
 class MainActivity : AppCompatActivity(), SensorEventListener {
 
-    // accelerometer
-    var ax = 0f
-    var ay = 0f
-    var az = 0f
-
-    var init = false
-
     lateinit var view:View
     lateinit var balls:List<Ball>
 
-
+    // used for timing the frmarate
     var prevT = 0L
     var fps = 0
 
+    // last time the vibrator was used
+    var vibT = 0L
 
     val sensorManager: SensorManager by lazy {
         getSystemService(Context.SENSOR_SERVICE) as SensorManager
     }
 
-    //val vibratorService = getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
-    val vibratorService: Vibrator by lazy {
+//    val vibratorService = getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
+    val vibrator: Vibrator by lazy {
         getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
     }
 
@@ -71,6 +67,7 @@ class MainActivity : AppCompatActivity(), SensorEventListener {
 
         window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT)
+
     }
 
     override fun onWindowFocusChanged(hasFocus: Boolean) {
@@ -125,15 +122,22 @@ class MainActivity : AppCompatActivity(), SensorEventListener {
             Sensor.TYPE_ACCELEROMETER -> {
 
                 // invert the x-axis to match screen coordinates
-                ax = -event.values[0]
-                ay =  event.values[1]
-                az =  event.values[2]
+                val ax = -event.values[0]
+                val ay =  event.values[1]
+                val az =  event.values[2]
 
                 animate(ax,ay,az)
             }
-
         }
+    }
 
+    fun bump(magnitude:Float) {
+        var now = System.currentTimeMillis()
+        if ( magnitude>2 && vibrator.hasVibrator() && now>vibT+51) {
+            vibrator.cancel()
+            //vibrator.vibrate(VibrationEffect.createOneShot(5, VibrationEffect.DEFAULT_AMPLITUDE))
+            vibT = now
+        }
     }
 
     fun animate(ax:Float,ay:Float,az:Float) {
@@ -144,34 +148,41 @@ class MainActivity : AppCompatActivity(), SensorEventListener {
 
             val millis = t - prevT
 
-            val theta_x = Math.atan2(ax.toDouble(),az.toDouble())
-            val theta_y = Math.atan2(ay.toDouble(),az.toDouble())
+            val thetaX = Math.atan2(ax.toDouble(),az.toDouble())
+            val thetaY = Math.atan2(ay.toDouble(),az.toDouble())
 
-            val grav_x = Math.sqrt( (ax*ax + az*az).toDouble() ) // x-dir components of vertical force
-            val grav_y = Math.sqrt( (ay*ay + az*az).toDouble() ) // y-dir components of vertical force
+            val gravX = Math.sqrt( (ax*ax + az*az).toDouble() ) // x-dir components of vertical force
+            val gravY = Math.sqrt( (ay*ay + az*az).toDouble() ) // y-dir components of vertical force
 
             // A ball rolling down an inclined plane
             // ...the long way...
             //val m = 1f
             //val r = 1f
             //var inertia = (7f/5f)*(m*r*r)
-            //var torque_x = grav_x * r * Math.sin(theta_x)
-            //var torque_y = grav_y * r * Math.sin(theta_y)
-            //var angular_accel_x = torque_x / inertia
-            //var angular_accel_y = torque_y / inertia
-            //var linear_accel_x = angular_accel_x * r
-            //var linear_accel_y = angular_accel_y * r
+            //var torqueX = gravX * r * Math.sin(thetaX)
+            //var torqueY = gravY * r * Math.sin(thetaY)
+            //var angularAccelX = torqueX / inertia
+            //var angularAccelY = torqueY / inertia
+            //var linearAccelX = angularAccelX * r
+            //var linearAccelY = angularAccelY * r
+            //var accelX = linearAccelX
+            //var accelY = linearAccelY
 
             // or more simply... (mass and radius cancel out)
-            var accel_x = (5f/7f) * grav_x * Math.sin(theta_x)
-            var accel_y = (5f/7f) * grav_y * Math.sin(theta_y)
+            var accelX = (5f/7f) * gravX * Math.sin(thetaX)
+            var accelY = (5f/7f) * gravY * Math.sin(thetaY)
 
             // account for magnitude of timeslice (acceleration is in units per time squared)
             val k = .02f
-            accel_x *= k * millis*millis
-            accel_y *= k * millis*millis
+            accelX *= k * millis*millis
+            accelY *= k * millis*millis
 
-            for ( ball in balls ) ball.update(accel_x.toFloat(),accel_y.toFloat())
+            // accumulate bump force for tactile feedback
+            // we only provide feedback for ball-wall interactions
+            // presumably ball-ball interactions don't cause the device to `bump`
+            var magBump = 0f
+            for ( ball in balls ) magBump += ball.update(accelX.toFloat(),accelY.toFloat())
+            bump(magBump)
 
             // each ball must interact with each other ball exactly once
             for ( i in 1..(balls.size-1) ) {   // all but the first
@@ -179,8 +190,6 @@ class MainActivity : AppCompatActivity(), SensorEventListener {
                     balls[i].collide(balls[j])
                 }
             }
-
-
         }
 
         prevT = t
