@@ -27,8 +27,8 @@ class MainActivity : AppCompatActivity(), SensorEventListener {
     lateinit var balls:List<Ball>
 
 
-    var prevT = 0L;
-    var fps = 0;
+    var prevT = 0L
+    var fps = 0
 
 
     val sensorManager: SensorManager by lazy {
@@ -125,26 +125,48 @@ class MainActivity : AppCompatActivity(), SensorEventListener {
 
     fun animate(ax:Float,ay:Float,az:Float) {
 
-        var t = System.currentTimeMillis()
+        val t = System.currentTimeMillis()
 
         if ( prevT>0 ) {
 
-            var millis = t - prevT;
+            val millis = t - prevT
 
-            var theta_x = Math.atan2(ax.toDouble(),az.toDouble())
-            var theta_y = Math.atan2(ay.toDouble(),az.toDouble())
+            val theta_x = Math.atan2(ax.toDouble(),az.toDouble())
+            val theta_y = Math.atan2(ay.toDouble(),az.toDouble())
 
-            var accel_x = Math.sin(theta_x).toFloat() * .2f*millis*millis
-            var accel_y = Math.sin(theta_y).toFloat() * .2f*millis*millis
+            val grav_x = Math.sqrt( (ax*ax + az*az).toDouble() ) // x-dir components of vertical force
+            val grav_y = Math.sqrt( (ay*ay + az*az).toDouble() ) // y-dir components of vertical force
 
-            for ( ball in balls ) ball.update(accel_x,accel_y)
+            // A ball rolling down an inclined plane
+            // ...the long way...
+            //val m = 1f
+            //val r = 1f
+            //var inertia = (7f/5f)*(m*r*r)
+            //var torque_x = grav_x * r * Math.sin(theta_x)
+            //var torque_y = grav_y * r * Math.sin(theta_y)
+            //var angular_accel_x = torque_x / inertia
+            //var angular_accel_y = torque_y / inertia
+            //var linear_accel_x = angular_accel_x * r
+            //var linear_accel_y = angular_accel_y * r
 
+            // or more simply... (mass and radius cancel out)
+            var accel_x = (5f/7f) * grav_x * Math.sin(theta_x)
+            var accel_y = (5f/7f) * grav_y * Math.sin(theta_y)
+
+            // account for magnitude of timeslice (acceleration is in units per time squared)
+            val k = .02f
+            accel_x *= k * millis*millis
+            accel_y *= k * millis*millis
+
+            for ( ball in balls ) ball.update(accel_x.toFloat(),accel_y.toFloat())
+
+            // each ball must interact with each other ball exactly once
             balls[0].collide(balls[1])
             balls[0].collide(balls[2])
             balls[1].collide(balls[2])
         }
 
-        prevT = t;
+        prevT = t
     }
 
 }
