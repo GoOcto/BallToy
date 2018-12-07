@@ -163,10 +163,8 @@ class MainActivity : AppCompatActivity(), SensorEventListener {
             //var torqueY = gravY * r * Math.sin(thetaY)
             //var angularAccelX = torqueX / inertia
             //var angularAccelY = torqueY / inertia
-            //var linearAccelX = angularAccelX * r
-            //var linearAccelY = angularAccelY * r
-            //var accelX = linearAccelX
-            //var accelY = linearAccelY
+            //var accelX = angularAccelX * r
+            //var accelY = angularAccelY * r
 
             // or more simply... (mass and radius cancel out)
             var accelX = (5f/7f) * gravX * Math.sin(thetaX)
